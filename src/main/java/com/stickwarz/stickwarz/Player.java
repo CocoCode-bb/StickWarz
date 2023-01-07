@@ -22,9 +22,9 @@ public class Player {
     private ImageView spriteNode;
     private Group spriteGroup;
 
-    public Player() {
+    public Player(String imageFile) {
         //loading the images from the resource folder in my project
-        spriteImage = new Image("playerSprite.png");
+        spriteImage = new Image(imageFile);
 
         spriteNode = new ImageView(spriteImage);
 

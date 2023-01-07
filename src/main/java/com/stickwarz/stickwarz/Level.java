@@ -25,8 +25,8 @@ public class Level {
     private PixelReader pixelReader;
 
     private boolean aimUp, aimDown, goRight, goLeft, goUp;
-    private Player player1 = new Player();
-    private Player player2 = new Player();
+    private Player player1 = new Player("player1.png");
+    private Player player2 = new Player("player2.png");
     private Player currentPlayer = player1;
     private AnimationTimer gameLoopTimer;
 
