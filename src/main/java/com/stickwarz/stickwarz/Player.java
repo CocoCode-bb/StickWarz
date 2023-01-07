@@ -35,6 +35,11 @@ public class Player {
     public void addToScene(Group parent) {
         parent.getChildren().add(spriteGroup);
 
+    }
+    public void removeFromScene(){
+
+        Group parent = (Group) spriteGroup.getParent();
+        parent.getChildren().remove(spriteGroup);
 
     }
 
