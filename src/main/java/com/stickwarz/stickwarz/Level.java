@@ -14,17 +14,27 @@ public class Level {
 
     private Image levelImage;
     private ImageView levelNode;
+
+    private Image backgroundImage;
+    private ImageView backgroundNode;
+
     private Group levelGroup;
     private PixelReader pixelReader;
 
-    public Level(String imageFile) {
+    public Level(String imageFile, String backgroundFile) {
         //loading the images from the resource folder in my project
+
+
 
          levelImage = new Image(imageFile);
          levelNode = new ImageView(levelImage);
 
+        backgroundImage = new Image(backgroundFile);
+        backgroundNode = new ImageView(backgroundImage);
 
-         levelGroup = new Group(levelNode);
+
+
+        levelGroup = new Group(backgroundNode, levelNode);
         pixelReader = levelImage.getPixelReader();
 
 
@@ -36,6 +46,10 @@ public class Level {
         Scene scene = parent.getScene();
         levelNode.fitWidthProperty().bind(scene.widthProperty());
         levelNode.fitHeightProperty().bind(scene.heightProperty());
+
+        backgroundNode.fitWidthProperty().bind(scene.widthProperty());
+        backgroundNode.fitHeightProperty().bind(scene.heightProperty());
+
         parent.getChildren().add(levelGroup);
 
 

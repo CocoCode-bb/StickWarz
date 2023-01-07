@@ -82,7 +82,7 @@ public class StickWarzApp extends Application {
 
     //setting up an image as a level, imageView node used to adjust the scene accurately to any screen size and aspect ratio without distortion
     private void setUpLevels(Group parent, Scene scene) {
-        Level level1 = new Level("level1.png");
+        Level level1 = new Level("level1.png", "background1.jpg");
         level1.addToScene(parent);
         currentLevel = level1;
 
@@ -128,7 +128,7 @@ public class StickWarzApp extends Application {
 
                         goRight = true;
                         break;
-                    case ENTER:
+                    case SPACE:
 
                         goUp = true;
                         break;
@@ -162,7 +162,7 @@ public class StickWarzApp extends Application {
                     case RIGHT:
                         goRight = false;
                         break;
-                    case ENTER:
+                    case SPACE:
                         goUp = false;
                         break;
                 }
