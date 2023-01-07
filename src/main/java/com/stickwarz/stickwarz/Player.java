@@ -27,8 +27,7 @@ public class Player {
         spriteImage = new Image("playerSprite.png");
 
         spriteNode = new ImageView(spriteImage);
-        spriteNode.setPreserveRatio(true);
-        spriteNode.setFitHeight(100);
+
 
         spriteGroup = new Group(spriteNode);
     }
