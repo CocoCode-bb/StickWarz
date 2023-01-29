@@ -6,7 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.paint.Color;
+
 
 public class Menu {
 
@@ -23,7 +23,7 @@ public class Menu {
 
 
 
-         menuImage = new Image("menu.jpg");
+         menuImage = new Image("menu.png");
          menuNode = new ImageView(menuImage);
 
 
