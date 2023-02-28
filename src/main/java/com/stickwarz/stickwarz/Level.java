@@ -70,7 +70,7 @@ public class Level {
         player2.addToScene(parent);
 
         //setting where both players will start
-        player1.moveTo(70  , 130);
+        player1.moveTo(70  , 130 );
         player2.moveTo((int) (levelImage.getWidth() - 70), 130);
 
 

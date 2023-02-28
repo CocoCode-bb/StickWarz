@@ -13,13 +13,13 @@ public class Weapon {
     private Group weaponGroup;
 
 
+
     public class Laser extends Weapon {
 
 
 
 
 
+
     }
-
-
 }
