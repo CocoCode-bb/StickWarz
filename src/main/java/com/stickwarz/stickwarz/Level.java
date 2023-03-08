@@ -2,13 +2,22 @@ package com.stickwarz.stickwarz;
 
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 public class Level {
 
@@ -21,8 +30,12 @@ public class Level {
     private Image backgroundImage;
     private ImageView backgroundNode;
 
-    private Group levelGroup;
+    private StackPane levelPane;
     private PixelReader pixelReader;
+
+    private Label scoreLabel;
+    private  Label timerLabel;
+
 
     private boolean aimUp, aimDown, goRight, goLeft, goUp;
     private Player player1 = new Player("player1.png");
@@ -41,10 +54,25 @@ public class Level {
         backgroundImage = new Image(backgroundFile);
         backgroundNode = new ImageView(backgroundImage);
 
+        scoreLabel = new Label();
+        scoreLabel.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+        scoreLabel.setFont(new Font(26));
+        updateScoreLabel();
+
+        timerLabel = new Label();
+        timerLabel.setText("Remaining turn time: 30secs");
+        timerLabel.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+        timerLabel.setFont(new Font(26));
 
 
-        levelGroup = new Group(backgroundNode, levelNode);
+
+
+        levelPane = new StackPane(backgroundNode, levelNode, scoreLabel, timerLabel);
+        levelPane.setAlignment(timerLabel, Pos.TOP_RIGHT);
+        levelPane.setAlignment(scoreLabel, Pos.TOP_LEFT);
         pixelReader = levelImage.getPixelReader();
+
+
 
 
 
@@ -59,7 +87,7 @@ public class Level {
         backgroundNode.fitWidthProperty().bind(scene.widthProperty());
         backgroundNode.fitHeightProperty().bind(scene.heightProperty());
 
-        parent.getChildren().add(levelGroup);
+        parent.getChildren().add(levelPane);
 
         player1.setLevel(this);
         player2.setLevel(this);
@@ -71,7 +99,9 @@ public class Level {
 
         //setting where both players will start
         player1.moveTo(70  , 130 );
-        player2.moveTo((int) (levelImage.getWidth() - 70), 130);
+        player2.moveTo((int) (parent.getScene().getWidth()- 70), 130);
+        //player2.moveTo((int) (parent.getScene().getWidth()- 70), 130);
+        //player2.moveTo((int) (levelImage.getWidth() - 70), 130);
 
 
 
@@ -85,10 +115,10 @@ public class Level {
         gameLoopTimer.stop();
         player1.removeFromScene();
         player2.removeFromScene();
-        levelGroup.getScene().setOnKeyPressed(null);
-        levelGroup.getScene().setOnKeyReleased(null);
-        Group parent = (Group) levelGroup.getParent();
-        parent.getChildren().remove(levelGroup);
+        levelPane.getScene().setOnKeyPressed(null);
+        levelPane.getScene().setOnKeyReleased(null);
+        Group parent = (Group) levelPane.getParent();
+        parent.getChildren().remove(levelPane);
 
     }
     //
@@ -165,6 +195,7 @@ public class Level {
                         } else {
                             currentPlayer = player1;
                         }
+                        updateScoreLabel();
                         break;
                     case ESCAPE:
                         app.endLevel();
@@ -197,6 +228,21 @@ public class Level {
                 }
             }
         });
+
+
+    }
+    private void updateScoreLabel(){
+        String text = "";
+        if (currentPlayer == player1){
+            text = "--> ";
+        }
+
+        text += "Player 1 lives: "+ player1.getLives() + "   ";
+        if (currentPlayer == player2){
+            text += "--> ";
+        }
+        text += "Player 2 lives: "+player2.getLives();
+        scoreLabel.setText(text);
 
 
     }

@@ -76,6 +76,7 @@ public class Menu {
         });
 
 
+
     }
     public void removeFromScene(){
         menuGroup.getScene().setOnKeyPressed(null);
