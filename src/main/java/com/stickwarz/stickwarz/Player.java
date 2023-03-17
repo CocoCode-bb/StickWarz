@@ -245,9 +245,13 @@ public class Player {
         return lives;
     }
 
-    public void setLives(int lives) {
-        this.lives = lives;
-    }
+    public void loseLife() {
+        lives--;
+        if (lives == 0){
+            currentState = PlayerState.DEAD;
+            level.playerDied(this);
+        }
+    } //
 
 }
 

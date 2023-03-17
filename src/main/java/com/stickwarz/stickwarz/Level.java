@@ -17,9 +17,11 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 public class Level {
+    private final long TURNLENGTHSECS = 30;
 
 
 
@@ -35,6 +37,7 @@ public class Level {
 
     private Label scoreLabel;
     private  Label timerLabel;
+    private long startTimeMillis;
 
 
     private boolean aimUp, aimDown, goRight, goLeft, goUp;
@@ -43,8 +46,10 @@ public class Level {
     private Player currentPlayer = player1;
     private AnimationTimer gameLoopTimer;
 
+
     public Level(String imageFile, String backgroundFile) {
         //loading the images from the resource folder in my project
+
 
 
 
@@ -60,7 +65,6 @@ public class Level {
         updateScoreLabel();
 
         timerLabel = new Label();
-        timerLabel.setText("Remaining turn time: 30secs");
         timerLabel.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
         timerLabel.setFont(new Font(26));
 
@@ -71,6 +75,12 @@ public class Level {
         levelPane.setAlignment(timerLabel, Pos.TOP_RIGHT);
         levelPane.setAlignment(scoreLabel, Pos.TOP_LEFT);
         pixelReader = levelImage.getPixelReader();
+
+        startTimeMillis = System.currentTimeMillis();
+        handleTurnTimer();
+
+
+
 
 
 
@@ -137,6 +147,8 @@ public class Level {
             //using animation timer to create simple game loop
             @Override
             public void handle(long now) {
+                handleTurnTimer();
+
 
                 if (goLeft) {
                     currentPlayer.goLeft();
@@ -188,17 +200,13 @@ public class Level {
 
                         goUp = true;
                         break;
-                    //allows me to swap between players manually
-                    case A:
-                        if (currentPlayer == player1) {
-                            currentPlayer = player2;
-                        } else {
-                            currentPlayer = player1;
-                        }
-                        updateScoreLabel();
-                        break;
+
                     case ESCAPE:
                         app.endLevel();
+                        break;
+                    case D:
+                        currentPlayer.loseLife();
+                        updateScoreLabel();
                         break;
 
                 }
@@ -231,6 +239,23 @@ public class Level {
 
 
     }
+    private void handleTurnTimer(){
+        long elapsedMillis = System.currentTimeMillis() - startTimeMillis;
+        long remainingSeconds = TURNLENGTHSECS - (elapsedMillis/1000);
+        if (remainingSeconds <= 0){
+            if (currentPlayer == player1) {
+                currentPlayer = player2;
+            } else {
+                currentPlayer = player1;
+            }
+            updateScoreLabel();
+            startTimeMillis = System.currentTimeMillis();
+            remainingSeconds = TURNLENGTHSECS;
+        }
+        timerLabel.setText("Remaining turn time: "+remainingSeconds + " secs");
+
+    }
+
     private void updateScoreLabel(){
         String text = "";
         if (currentPlayer == player1){
@@ -245,6 +270,22 @@ public class Level {
         scoreLabel.setText(text);
 
 
+    }
+    public void playerDied (Player deadPlayer) {
+        //call back from one player to the other
+        gameLoopTimer.stop();
+        String winnerPlayer;
+        if (deadPlayer == player1) {
+            winnerPlayer = "Player 2";
+        }else {
+            winnerPlayer = "Player 1";
+        }
+
+        Label winnerLabel  = new Label();
+        winnerLabel.setBackground(new Background(new BackgroundFill(Color.HONEYDEW, CornerRadii.EMPTY, Insets.EMPTY)));
+        winnerLabel.setFont(new Font(50));
+        winnerLabel.setText("Winner is: " +  winnerPlayer);
+        levelPane.getChildren().add(winnerLabel);
     }
 
 

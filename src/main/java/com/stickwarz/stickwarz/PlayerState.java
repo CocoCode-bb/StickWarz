@@ -4,5 +4,6 @@ public enum PlayerState {
     PASSIVE,
     MOVING,
     AIMING,
-    FIRING
+    FIRING,
+    DEAD
 }
