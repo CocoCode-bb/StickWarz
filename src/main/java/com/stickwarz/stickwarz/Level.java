@@ -43,12 +43,13 @@ public class Level {
     private boolean aimUp, aimDown, goRight, goLeft, goUp;
     private Player player1 = new Player("player1.png");
     private Player player2 = new Player("player2.png");
-    private Player currentPlayer = player1;
+    private Player currentPlayer;
     private AnimationTimer gameLoopTimer;
 
 
     public Level(String imageFile, String backgroundFile) {
         //loading the images from the resource folder in my project
+        setCurrentPlayer(player1);
 
 
 
@@ -157,6 +158,10 @@ public class Level {
                 } else if (goRight) {
                     currentPlayer.goRight();
 
+                }else if (aimUp){
+                    currentPlayer.aimUp();
+                }else if (aimDown){
+                    currentPlayer.aimDown();
                 }
 
                 if (goUp) {
@@ -244,15 +249,23 @@ public class Level {
         long remainingSeconds = TURNLENGTHSECS - (elapsedMillis/1000);
         if (remainingSeconds <= 0){
             if (currentPlayer == player1) {
-                currentPlayer = player2;
+                setCurrentPlayer(player2);
             } else {
-                currentPlayer = player1;
+                setCurrentPlayer(player1);
             }
             updateScoreLabel();
             startTimeMillis = System.currentTimeMillis();
             remainingSeconds = TURNLENGTHSECS;
         }
         timerLabel.setText("Remaining turn time: "+remainingSeconds + " secs");
+
+    }
+    private void setCurrentPlayer(Player player){
+        if (currentPlayer != null) {
+            currentPlayer.setAimLineVisible(false);
+        }
+        currentPlayer = player;
+        currentPlayer.setAimLineVisible(true);
 
     }
 

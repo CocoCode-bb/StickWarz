@@ -3,10 +3,14 @@ package com.stickwarz.stickwarz;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
+import javafx.scene.transform.Rotate;
 
 public class Player {
 
     private final int MOVEMENT = 5;
+    private final int AIMLINEMULTIPLIER = 3;
 
     //Variables needed for gravity to be calculated
     private final double GRAVITY = 0.2;
@@ -26,30 +30,44 @@ public class Player {
     private ImageView spriteNode;
     private Group spriteGroup;
 
+    private Line aimLine;
+    private Group aimGroup;
+    private int aimAngle;
+
     public Player(String imageFile) {
         //loading the images from the resource folder in my project
         spriteImage = new Image(imageFile);
-
         spriteNode = new ImageView(spriteImage);
-
-
         spriteGroup = new Group(spriteNode);
+
+        aimLine = new Line();
+        aimLine.setStrokeWidth(5);
+        aimLine.setStroke(Color.BLUE);
+        aimLine.getStrokeDashArray().addAll(10d, 10d);
+
+        aimAngle = 0;
+
+        aimGroup = new Group(aimLine);
+        aimGroup.setVisible(false);
     }
 
     public void addToScene(Group parent) {
         parent.getChildren().add(spriteGroup);
+        parent.getChildren().add(aimGroup);
+
+
+
 
     }
     public void removeFromScene(){
 
         Group parent = (Group) spriteGroup.getParent();
         parent.getChildren().remove(spriteGroup);
-
+        parent.getChildren().remove(aimGroup);
     }
 
     public void setLevel(Level newLevel) {
         level = newLevel;
-
     }
 
     public void moveTo(int x, int y) {
@@ -57,12 +75,15 @@ public class Player {
         int cy = (int) spriteGroup.getBoundsInLocal().getHeight() / 2;
 
         spriteGroup.relocate(x - cx, y - cy);
+        updateAimLine();
+
 
     }
 
     public void moveBy(int moveX, int moveY) {
         //relocates the sprite from its current position based on how much it has moved by
         spriteGroup.relocate(spriteGroup.getLayoutX() + moveX, spriteGroup.getLayoutY() + moveY);
+        updateAimLine();
 
     }
     // Go right and go left are defined by the final variable MOVEMENT, moveY is zero as the player won't move up and down using arrow keys
@@ -116,6 +137,16 @@ public class Player {
                 dx--;
             }
         }
+    }
+
+    public  void aimUp(){
+
+        aimAngle -= 5;
+        updateAimLine();
+    }
+    public  void aimDown(){
+        aimAngle += 5;
+        updateAimLine();
     }
 
 
@@ -240,6 +271,23 @@ public class Player {
             speedVertical = TERMINALVELOCITY;
         }
     }
+    public void setAimLineVisible(boolean visible){
+
+        aimGroup.setVisible(visible);
+    }
+
+
+
+    private void updateAimLine(){
+        aimLine.getTransforms().clear();
+        aimLine.setStartX(spriteGroup.getLayoutX()+(spriteGroup.getBoundsInLocal().getWidth()/2));
+        aimLine.setStartY(spriteGroup.getLayoutY()+(spriteGroup.getBoundsInLocal().getHeight()/2));
+        aimLine.setEndX(aimLine.getStartX());
+        aimLine.setEndY(aimLine.getStartY()-(spriteGroup.getBoundsInLocal().getHeight()*3));
+
+        aimLine.getTransforms().add(new Rotate( aimAngle, aimLine.getStartX(), aimLine.getStartY()));
+    }
+
 
     public int getLives() {
         return lives;
@@ -251,7 +299,7 @@ public class Player {
             currentState = PlayerState.DEAD;
             level.playerDied(this);
         }
-    } //
+    }
 
 }
 
