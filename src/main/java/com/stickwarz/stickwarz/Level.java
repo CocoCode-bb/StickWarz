@@ -49,7 +49,8 @@ public class Level {
 
     public Level(String imageFile, String backgroundFile) {
         //loading the images from the resource folder in my project
-        setCurrentPlayer(player1);
+        currentPlayer = player1;
+        currentPlayer.setCurrentPlayer(true);
 
 
 
@@ -209,10 +210,10 @@ public class Level {
                     case ESCAPE:
                         app.endLevel();
                         break;
-                    case D:
-                        currentPlayer.loseLife();
-                        updateScoreLabel();
+                    case ENTER:
+                        currentPlayer.fireWeapon();
                         break;
+
 
                 }
 
@@ -248,24 +249,25 @@ public class Level {
         long elapsedMillis = System.currentTimeMillis() - startTimeMillis;
         long remainingSeconds = TURNLENGTHSECS - (elapsedMillis/1000);
         if (remainingSeconds <= 0){
-            if (currentPlayer == player1) {
-                setCurrentPlayer(player2);
-            } else {
-                setCurrentPlayer(player1);
-            }
-            updateScoreLabel();
-            startTimeMillis = System.currentTimeMillis();
+            switchCurrentPlayer();
             remainingSeconds = TURNLENGTHSECS;
         }
         timerLabel.setText("Remaining turn time: "+remainingSeconds + " secs");
 
     }
-    private void setCurrentPlayer(Player player){
-        if (currentPlayer != null) {
-            currentPlayer.setAimLineVisible(false);
+    public void switchCurrentPlayer(){
+
+            currentPlayer.setCurrentPlayer(false);
+        if (currentPlayer == player1) {
+            currentPlayer = player2;
+        } else {
+            currentPlayer = player1;
         }
-        currentPlayer = player;
-        currentPlayer.setAimLineVisible(true);
+        updateScoreLabel();
+        startTimeMillis = System.currentTimeMillis();
+
+
+        currentPlayer.setCurrentPlayer(true);
 
     }
 

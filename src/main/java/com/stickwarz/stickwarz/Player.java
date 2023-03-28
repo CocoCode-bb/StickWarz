@@ -21,6 +21,8 @@ public class Player {
     private PlayerState currentState = PlayerState.PASSIVE;
     private Level level;
 
+    private Weapon weapon;
+
 
 
     private int lives = 5;
@@ -45,6 +47,8 @@ public class Player {
         aimLine.setStroke(Color.BLUE);
         aimLine.getStrokeDashArray().addAll(10d, 10d);
 
+
+
         aimAngle = 0;
 
         aimGroup = new Group(aimLine);
@@ -64,6 +68,9 @@ public class Player {
         Group parent = (Group) spriteGroup.getParent();
         parent.getChildren().remove(spriteGroup);
         parent.getChildren().remove(aimGroup);
+        if (weapon != null){
+            weapon.removeFromScene();
+        }
     }
 
     public void setLevel(Level newLevel) {
@@ -89,64 +96,86 @@ public class Player {
     // Go right and go left are defined by the final variable MOVEMENT, moveY is zero as the player won't move up and down using arrow keys
 
     public void goRight() {
+        if (weapon == null) {
 
-        int dx = MOVEMENT;
-        int x = (int) (spriteGroup.getLayoutX() + spriteGroup.getBoundsInLocal().getWidth());
-        int sceneWidth = (int) spriteGroup.getScene().getWidth();
-        //make sure that player can't go beyond the boundary of the scene
-        if (x < sceneWidth) {
-            if (sceneWidth - x < dx) {
-                dx = sceneWidth - x;
+            int dx = MOVEMENT;
+            int x = (int) (spriteGroup.getLayoutX() + spriteGroup.getBoundsInLocal().getWidth());
+            int sceneWidth = (int) spriteGroup.getScene().getWidth();
+            //make sure that player can't go beyond the boundary of the scene
+            if (x < sceneWidth) {
+                if (sceneWidth - x < dx) {
+                    dx = sceneWidth - x;
 
-            }
-            while (dx > 0) {
-                if (isTouchingTerrainRight()) {
-                    return;
                 }
+                while (dx > 0) {
+                    if (isTouchingTerrainRight()) {
+                        return;
+                    }
 
-                moveBy(1, 0);
-                dx--;
+                    moveBy(1, 0);
+                    dx--;
+                }
             }
         }
     }
 
 
     public void goUp() {
-        if (isTouchingTerrainBelow()) {
+        if (weapon == null) {
+            if (isTouchingTerrainBelow()) {
 
-            speedVertical = JUMPVELOCITY;
-            currentState = PlayerState.MOVING;
+                speedVertical = JUMPVELOCITY;
+                currentState = PlayerState.MOVING;
+            }
         }
     }
 
     public void goLeft() {
 
-        int dx = MOVEMENT;
-        int x = (int) spriteGroup.getLayoutX();
-        //makes sure that the player can't move beyond the boundary of the scene
-        if (x > 0) {
-            if (x < dx) {
-                dx = x;
-            }
-            while (dx > 0) {
-                if (isTouchingTerrainLeft()) {
-                    return;
-                }
+        if (weapon == null) {
 
-                moveBy(-1, 0);
-                dx--;
+            int dx = MOVEMENT;
+            int x = (int) spriteGroup.getLayoutX();
+            //makes sure that the player can't move beyond the boundary of the scene
+            if (x > 0) {
+                if (x < dx) {
+                    dx = x;
+                }
+                while (dx > 0) {
+                    if (isTouchingTerrainLeft()) {
+                        return;
+                    }
+
+                    moveBy(-1, 0);
+                    dx--;
+                }
             }
         }
     }
 
     public  void aimUp(){
-
-        aimAngle -= 5;
-        updateAimLine();
+        if (weapon==null) {
+            aimAngle -= 3;
+            updateAimLine();
+        }
     }
     public  void aimDown(){
-        aimAngle += 5;
-        updateAimLine();
+        if (weapon == null) {
+            aimAngle += 3;
+            updateAimLine();
+        }
+    }
+    public void fireWeapon(){
+
+
+        if (currentState == PlayerState.PASSIVE) {
+            if (weapon == null) {
+                weapon = new Weapon(level, aimLine, aimAngle);
+                weapon.addToScene((Group) spriteGroup.getParent());
+                aimGroup.setVisible(false);
+            }
+        }
+
     }
 
 
@@ -160,6 +189,7 @@ public class Player {
         int sceneHeight = (int) spriteGroup.getScene().getHeight();
         int sceneWidth = (int) spriteGroup.getScene().getWidth();
         while (x <= rightX) {
+
             if (level.isTerrain(x, y, sceneWidth, sceneHeight)) {
                 return true;
             }
@@ -231,6 +261,9 @@ public class Player {
     }
 
     public void gameLoop() {
+        if (weapon != null) {
+            weapon.gameLoop();
+        }
 
         int sceneHeight = (int) spriteGroup.getScene().getHeight();
         if (speedVertical > 0) {
@@ -239,7 +272,7 @@ public class Player {
                 int y = (int) (spriteGroup.getLayoutY() + spriteGroup.getBoundsInLocal().getHeight());
 
                 if (y >= (sceneHeight - 1)) {
-                    // TODO: Player dies handling
+                    level.playerDied(this);
                 } else if (isTouchingTerrainBelow()) {
                     speedVertical = 0;
                     currentState = PlayerState.PASSIVE;
@@ -264,16 +297,24 @@ public class Player {
         }
 
 
+
         currentState = PlayerState.MOVING;
 
         speedVertical = speedVertical + GRAVITY;
         if (speedVertical > TERMINALVELOCITY) {
             speedVertical = TERMINALVELOCITY;
         }
-    }
-    public void setAimLineVisible(boolean visible){
 
-        aimGroup.setVisible(visible);
+    }
+    public void setCurrentPlayer(boolean current){
+        if (!current && weapon!= null){
+            weapon.removeFromScene();
+            weapon = null;
+        }
+
+
+        aimGroup.setVisible(current);
+
     }
 
 
@@ -283,8 +324,7 @@ public class Player {
         aimLine.setStartX(spriteGroup.getLayoutX()+(spriteGroup.getBoundsInLocal().getWidth()/2));
         aimLine.setStartY(spriteGroup.getLayoutY()+(spriteGroup.getBoundsInLocal().getHeight()/2));
         aimLine.setEndX(aimLine.getStartX());
-        aimLine.setEndY(aimLine.getStartY()-(spriteGroup.getBoundsInLocal().getHeight()*3));
-
+        aimLine.setEndY(aimLine.getStartY()-(spriteGroup.getBoundsInLocal().getHeight()*AIMLINEMULTIPLIER));
         aimLine.getTransforms().add(new Rotate( aimAngle, aimLine.getStartX(), aimLine.getStartY()));
     }
 
