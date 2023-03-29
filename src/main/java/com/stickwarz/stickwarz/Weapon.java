@@ -76,6 +76,13 @@ public class Weapon {
                 level.switchCurrentPlayer();
                 return;
             }
+            Player opponent = level.isOpponent((int) endPoint.getX(), (int) endPoint.getY());
+            if(opponent != null){
+               if (opponent.loseLife()){
+                   level.switchCurrentPlayer();
+               }
+               return;
+            }
             counter++;
         }
 

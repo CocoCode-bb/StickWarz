@@ -135,13 +135,25 @@ public class Level {
     }
     //
     public boolean isTerrain(int x, int y, int width, int height){
-
         int imageX = (x * (int)levelImage.getWidth()) / width;
         int imageY = (y * (int)levelImage.getHeight()) / height;
         Color color = pixelReader.getColor(imageX, imageY);
         double opacity = color.getOpacity();
 
         return opacity > 0.5;
+    }
+    public Player isOpponent(int x, int y){
+        Player opponent;
+        if (currentPlayer == player1){
+            opponent = player2;
+        }else{
+            opponent = player1;
+        }
+        if (opponent.isHit(x, y)){
+            return  opponent;
+        }
+
+        return  null;
     }
     // animation timer to render the game using fps for smoother animations and more accurate physics
     private void startGameLoop(Scene scene) {

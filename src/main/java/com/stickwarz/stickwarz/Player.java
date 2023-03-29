@@ -1,5 +1,6 @@
 package com.stickwarz.stickwarz;
 
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -333,12 +334,17 @@ public class Player {
         return lives;
     }
 
-    public void loseLife() {
+    public boolean loseLife(){
         lives--;
         if (lives == 0){
             currentState = PlayerState.DEAD;
             level.playerDied(this);
         }
+        return currentState != PlayerState.DEAD;
+    }
+    public boolean isHit(int x, int y){
+
+        return spriteNode.contains(spriteNode.sceneToLocal(x, y));
     }
 
 }
